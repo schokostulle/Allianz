@@ -1,6 +1,8 @@
 import { supabase } from "/js/supabase.js";
 import { loadProfile } from "/js/auth.js";
 
+const DOMAIN = "@logbuch.fake";
+
 const btnLogin = document.getElementById("btn-login");
 const btnRegister = document.getElementById("btn-register");
 const loginForm = document.getElementById("login-form");
@@ -30,8 +32,9 @@ if (loginForm) {
     e.preventDefault();
     statusBox.textContent = "";
 
-    const email = loginForm.email.value.trim();
+    const username = loginForm.username.value.trim();
     const password = loginForm.password.value.trim();
+    const email = username + DOMAIN;
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -65,9 +68,9 @@ if (registerForm) {
     e.preventDefault();
     statusBox.textContent = "";
 
-    const email = registerForm.email.value.trim();
-    const password = registerForm.password.value.trim();
     const username = registerForm.username.value.trim();
+    const password = registerForm.password.value.trim();
+    const email = username + DOMAIN;
 
     const { data, error } = await supabase.auth.signUp({
       email,
