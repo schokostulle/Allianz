@@ -1,0 +1,234 @@
+/* =========================================================
+   style.css – Global Layout / Komponenten / Utility
+   Nutzt ausschließlich Tokens aus root.css
+   Version 1.0 – Basis
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   RESET & GLOBAL
+--------------------------------------------------------- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family-base);
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------
+   LAYOUT: SHELL (Navigation + Main)
+--------------------------------------------------------- */
+
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Linkes Navigationsfeld */
+aside#nav {
+  width: 200px;
+  background: var(--color-surface);
+  padding: var(--space-md);
+  border-right: var(--border-thin) solid var(--border-color);
+  overflow-y: auto;
+}
+
+/* Inhaltsbereich */
+main {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------
+   NAVIGATION LINKS
+--------------------------------------------------------- */
+
+aside#nav nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+aside#nav a {
+  text-decoration: none;
+  color: var(--color-text);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  border: var(--border-thin) solid var(--border-color-light);
+  transition: background var(--anim-normal) var(--ease-default);
+}
+
+aside#nav a:hover {
+  background: var(--color-primary-dark);
+}
+
+.nav-header {
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  margin-bottom: var(--space-lg);
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   INDEX – ZENTRIERTER STARTSCREEN
+--------------------------------------------------------- */
+
+.center {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+/* ---------------------------------------------------------
+   BUTTONS
+--------------------------------------------------------- */
+
+button {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  transition: background var(--anim-normal) var(--ease-default);
+}
+
+button:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ---------------------------------------------------------
+   STATUSBAR
+--------------------------------------------------------- */
+
+#status-bar {
+  position: fixed;
+  bottom: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-info);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: opacity var(--anim-normal) var(--ease-default);
+  z-index: var(--z-popup);
+}
+
+#status-bar.show {
+  opacity: 1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   SCROLL FIX für mobile Navigation
+--------------------------------------------------------- */
+
+@media (max-width: var(--bp-tablet)) {
+  aside#nav {
+    width: 180px;
+  }
+}
+
+@media (max-width: var(--bp-mobile)) {
+  aside#nav {
+    position: fixed;
+    height: 100%;
+    z-index: var(--z-header);
+  }
+
+  main {
+    margin-left: 180px;
+  }
+}
+
+/* Kopfbereich */
+#kopf {
+  padding: var(--space-md);
+  border-bottom: var(--border-thin) solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.kopf-line1 {
+  text-align: right;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.kopf-line2 {
+  text-align: left;
+  font-size: var(--font-size-xxl);
+}
+
+/* =========================================================
+   GENERELLE TABELLEN-OPTIMIERUNG – KOMPAKT & SAUBER
+========================================================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  background: var(--color-surface);
+}
+
+/* Kopf */
+table th {
+  padding: var(--space-xxs) var(--space-xs);
+  height: var(--space-lg);
+  border-bottom: var(--border-normal) solid var(--border-color);
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+/* Zellen */
+table td {
+  padding: var(--space-xxs) var(--space-xs);
+  height: var(--space-lg);
+  border-bottom: var(--border-thin) solid var(--border-color);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+/* kompakter: engere Abstände */
+table th,
+table td {
+  line-height: var(--line-height-tight);
+}
+
+/* alternierende Zeilen */
+table tr:nth-child(even) {
+  background: var(--color-bg-light);
+}
+
+/* Text-Spalten linksbündig */
+table td.txt,
+table th.txt {
+  text-align: left;
+}
+
+/* Ganzzahl-Spalten mittig */
+table td.num,
+table th.num {
+  text-align: center;
+}
