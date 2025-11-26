@@ -23,7 +23,7 @@ export async function loadProfile() {
   return data;
 }
 
-export async function requireAuth(allowedRoles = ["Admin", "Member"]) {
+export async function requireAuth(roles = ["Admin", "Member"]) {
   const session = await getSession();
   if (!session) {
     window.location.href = "/index.html";
@@ -36,12 +36,14 @@ export async function requireAuth(allowedRoles = ["Admin", "Member"]) {
     return;
   }
 
-  if (!allowedRoles.includes(profile.role)) {
+  if (!roles.includes(profile.role)) {
     window.location.href = "/index.html";
     return;
   }
 
   if (profile.status !== "aktiv") {
+    await supabase.auth.signOut();
+    sessionStorage.clear();
     window.location.href = "/index.html";
     return;
   }
