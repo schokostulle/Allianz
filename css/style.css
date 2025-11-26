@@ -1,7 +1,6 @@
 /* =========================================================
    style.css – Global Layout / Komponenten / Utility
-   Nutzt ausschließlich Tokens aus root.css
-   Version 1.1 – aktualisiert
+   Version 1.2 – aktualisiert
 ========================================================= */
 
 /* ---------------------------------------------------------
@@ -24,15 +23,16 @@ html, body {
 }
 
 /* ---------------------------------------------------------
-   LAYOUT: SHELL (Navigation + Main)
+   APP-SHELL (Navigation + Main)
+   → Nur aktiv, wenn NICHT auth-body
 --------------------------------------------------------- */
 
-body {
+body:not(.auth-body) {
   display: flex;
   flex-direction: row;
 }
 
-/* Linkes Navigationsfeld */
+/* Navigation links */
 aside#nav {
   width: 200px;
   background: var(--color-surface);
@@ -41,7 +41,7 @@ aside#nav {
   overflow-y: auto;
 }
 
-/* Inhaltsbereich */
+/* Hauptinhalt */
 main {
   flex: 1;
   padding: var(--space-lg);
@@ -66,6 +66,7 @@ aside#nav a {
   background: var(--color-surface-alt);
   border: var(--border-thin) solid var(--border-color-light);
   transition: background var(--anim-normal) var(--ease-default);
+  white-space: nowrap;
 }
 
 aside#nav a:hover {
@@ -76,20 +77,18 @@ aside#nav a:hover {
   font-size: var(--font-size-xl);
   font-weight: bold;
   margin-bottom: var(--space-lg);
-  color: var(--color-text);
   text-align: center;
 }
 
 /* ---------------------------------------------------------
-   INDEX / LOGIN / REGISTRATION
+   LOGIN / REGISTRATION SCREEN
 --------------------------------------------------------- */
 
-.auth-body {
-  height: 100vh;
+body.auth-body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--color-bg);
+  overflow: hidden;
 }
 
 .auth-card {
@@ -107,8 +106,6 @@ aside#nav a:hover {
   text-align: center;
   font-family: var(--font-family-title);
   font-size: var(--font-size-xxl);
-  color: var(--color-text);
-  margin-bottom: var(--space-md);
 }
 
 .auth-tabs {
@@ -166,7 +163,7 @@ aside#nav a:hover {
 }
 
 /* ---------------------------------------------------------
-   STARTSCREEN GENERAL CENTER (falls benötigt)
+   STARTSCREEN LEGACY (falls benötigt)
 --------------------------------------------------------- */
 
 .center {
@@ -224,7 +221,7 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   SCROLL FIX
+   RESPONSIVE NAVIGATION
 --------------------------------------------------------- */
 
 @media (max-width: var(--bp-tablet)) {
@@ -246,7 +243,7 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   KOPF (Dashboard Kopfzeile)
+   KOPF (Modul-Kopfzeile)
 --------------------------------------------------------- */
 
 #kopf {
@@ -269,7 +266,7 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   TABELLEN – GLOBAL KOMPATIBEL MIT ALLEN MODULEN
+   TABELLEN — GLOBAL
 --------------------------------------------------------- */
 
 table {
@@ -279,7 +276,6 @@ table {
   background: var(--color-surface);
 }
 
-/* Header */
 table th {
   padding: var(--space-xxs) var(--space-xs);
   height: var(--space-lg);
@@ -290,7 +286,6 @@ table th {
   white-space: nowrap;
 }
 
-/* Cells */
 table td {
   padding: var(--space-xxs) var(--space-xs);
   height: var(--space-lg);
@@ -304,7 +299,6 @@ table tr:nth-child(even) {
   background: var(--color-bg-light);
 }
 
-/* Alignment */
 table td.txt, table th.txt {
   text-align: left;
 }
@@ -313,7 +307,7 @@ table td.num, table th.num {
   text-align: center;
 }
 
-/* kompakt */
-table th, table td {
+table th,
+table td {
   line-height: var(--line-height-tight);
 }
