@@ -1,8 +1,8 @@
 /* =========================================================
    style.css – Global Layout / Komponenten / Utility
    Nutzt ausschließlich Tokens aus root.css
-   Version 1.0 – Basis
-   ========================================================= */
+   Version 1.1 – aktualisiert
+========================================================= */
 
 /* ---------------------------------------------------------
    RESET & GLOBAL
@@ -81,7 +81,92 @@ aside#nav a:hover {
 }
 
 /* ---------------------------------------------------------
-   INDEX – ZENTRIERTER STARTSCREEN
+   INDEX / LOGIN / REGISTRATION
+--------------------------------------------------------- */
+
+.auth-body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-bg);
+}
+
+.auth-card {
+  width: 380px;
+  background: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.auth-title {
+  text-align: center;
+  font-family: var(--font-family-title);
+  font-size: var(--font-size-xxl);
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.auth-tabs button {
+  flex: 1;
+  padding: var(--space-sm);
+  background: var(--color-surface-alt);
+  border: var(--border-normal) solid var(--border-color);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--anim-normal) var(--ease-default);
+}
+
+.auth-tabs button.active {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-light);
+}
+
+.auth-status {
+  height: 20px;
+  font-size: var(--font-size-sm);
+  text-align: center;
+  color: var(--color-error);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.auth-form input {
+  padding: var(--space-sm);
+  background: var(--color-bg-light);
+  border: var(--border-thin) solid var(--border-color-light);
+  color: var(--color-text);
+}
+
+.auth-btn {
+  padding: var(--space-sm);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
+}
+
+.auth-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ---------------------------------------------------------
+   STARTSCREEN GENERAL CENTER (falls benötigt)
 --------------------------------------------------------- */
 
 .center {
@@ -93,7 +178,7 @@ aside#nav a:hover {
 }
 
 /* ---------------------------------------------------------
-   BUTTONS
+   BUTTONS GLOBAL
 --------------------------------------------------------- */
 
 button {
@@ -139,7 +224,7 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   SCROLL FIX für mobile Navigation
+   SCROLL FIX
 --------------------------------------------------------- */
 
 @media (max-width: var(--bp-tablet)) {
@@ -160,7 +245,10 @@ button:hover {
   }
 }
 
-/* Kopfbereich */
+/* ---------------------------------------------------------
+   KOPF (Dashboard Kopfzeile)
+--------------------------------------------------------- */
+
 #kopf {
   padding: var(--space-md);
   border-bottom: var(--border-thin) solid var(--border-color);
@@ -180,9 +268,9 @@ button:hover {
   font-size: var(--font-size-xxl);
 }
 
-/* =========================================================
-   GENERELLE TABELLEN-OPTIMIERUNG – KOMPAKT & SAUBER
-========================================================= */
+/* ---------------------------------------------------------
+   TABELLEN – GLOBAL KOMPATIBEL MIT ALLEN MODULEN
+--------------------------------------------------------- */
 
 table {
   width: 100%;
@@ -191,7 +279,7 @@ table {
   background: var(--color-surface);
 }
 
-/* Kopf */
+/* Header */
 table th {
   padding: var(--space-xxs) var(--space-xs);
   height: var(--space-lg);
@@ -199,36 +287,33 @@ table th {
   background: var(--color-surface-alt);
   color: var(--color-text);
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-/* Zellen */
+/* Cells */
 table td {
   padding: var(--space-xxs) var(--space-xs);
   height: var(--space-lg);
   border-bottom: var(--border-thin) solid var(--border-color);
   color: var(--color-text);
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-/* kompakter: engere Abstände */
-table th,
-table td {
-  line-height: var(--line-height-tight);
-}
-
-/* alternierende Zeilen */
 table tr:nth-child(even) {
   background: var(--color-bg-light);
 }
 
-/* Text-Spalten linksbündig */
-table td.txt,
-table th.txt {
+/* Alignment */
+table td.txt, table th.txt {
   text-align: left;
 }
 
-/* Ganzzahl-Spalten mittig */
-table td.num,
-table th.num {
+table td.num, table th.num {
   text-align: center;
+}
+
+/* kompakt */
+table th, table td {
+  line-height: var(--line-height-tight);
 }
