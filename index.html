@@ -3,108 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Logbuch – Login</title>
+
   <link rel="stylesheet" href="/css/root.css">
   <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: var(--color-bg);
-      height: 100vh;
-      color: var(--color-text);
-      font-family: var(--font-family-base);
-    }
-
-    .auth-card {
-      width: 380px;
-      background: var(--color-surface);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .auth-tabs {
-      display: flex;
-      gap: var(--space-sm);
-    }
-
-    .auth-tabs button {
-      flex: 1;
-      padding: var(--space-sm);
-      background: var(--color-surface-alt);
-      border: var(--border-normal) solid var(--border-color);
-      cursor: pointer;
-      color: var(--color-text);
-      font-size: var(--font-size-base);
-    }
-
-    .auth-tabs button.active {
-      background: var(--color-primary-dark);
-      border-color: var(--color-primary-light);
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    input {
-      padding: var(--space-sm);
-      background: var(--color-bg-light);
-      border: var(--border-thin) solid var(--border-color-light);
-      color: var(--color-text);
-    }
-
-    button[type="submit"] {
-      padding: var(--space-sm);
-      background: var(--color-primary);
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      font-weight: bold;
-    }
-
-    #status {
-      height: 20px;
-      font-size: var(--font-size-sm);
-      text-align: center;
-      color: var(--color-error);
-    }
-  </style>
 </head>
 
-<body>
+<body class="auth-body">
 
-<div class="auth-card">
+  <div class="auth-card">
 
-  <div class="auth-tabs">
-    <button id="btn-login" class="active">Login</button>
-    <button id="btn-register">Registrieren</button>
+    <div class="auth-tabs">
+      <button id="btn-login" class="active">Login</button>
+      <button id="btn-register">Registrieren</button>
+    </div>
+
+    <div id="status" class="auth-status"></div>
+
+    <form id="login-form" class="auth-form">
+      <input type="text" name="username" placeholder="Benutzername" required>
+      <input type="password" name="password" placeholder="Passwort" required>
+      <button type="submit" class="auth-btn">Login</button>
+    </form>
+
+    <form id="register-form" class="auth-form" style="display:none;">
+      <input type="text" name="username" placeholder="Benutzername" required>
+      <input type="password" name="password" placeholder="Passwort" required>
+      <button type="submit" class="auth-btn">Registrieren</button>
+    </form>
+
   </div>
 
-  <div id="status"></div>
-
-  <form id="login-form">
-    <input type="email" name="email" placeholder="E-Mail" required>
-    <input type="password" name="password" placeholder="Passwort" required>
-    <button type="submit">Login</button>
-  </form>
-
-  <form id="register-form" style="display:none;">
-    <input type="text" name="username" placeholder="Benutzername" required>
-    <input type="email" name="email" placeholder="E-Mail" required>
-    <input type="password" name="password" placeholder="Passwort" required>
-    <button type="submit">Registrieren</button>
-  </form>
-
-</div>
-
-<script type="module" src="/js/index.js"></script>
+  <script type="module" src="/js/index.js"></script>
 
 </body>
 </html>
