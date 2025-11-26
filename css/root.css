@@ -1,0 +1,114 @@
+/* =========================================================
+   root.css – Design Tokens / Style Library
+   Basis für alle Stile in der Webapp
+   Version 1.1 – geprüft & strukturell optimiert
+   ========================================================= */
+
+:root {
+  /* -------------------------------------------------------
+     1) FARBSYSTEM
+  --------------------------------------------------------*/
+
+  /* Grundfarben (Maritime Webapp) */
+  --color-bg: #0a0f1a;
+  --color-bg-light: #112235;
+  --color-surface: #1e2f40;
+  --color-surface-alt: #26384a;
+
+  --color-primary: #2fa4e7;
+  --color-primary-dark: #1b6fa8;
+  --color-primary-light: #6ec8ff;
+
+  --color-text: #d9cba0;
+  --color-text-muted: #9aa5b1;
+
+  /* Statusfarben */
+  --color-ok: #33cc66;
+  --color-warn: #ffcc00;
+  --color-error: #ff4444;
+  --color-info: #33aaff;
+
+  /* Transparenzen */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
+
+  /* -------------------------------------------------------
+     2) TYPOGRAFIE
+  --------------------------------------------------------*/
+  --font-family-base: "Courier New", Courier, monospace;
+  --font-family-title: "Times New Roman", Times, serif;
+  --font-family-comment: "Calibri", Arial, sans-serif;
+
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-xxl: 28px;
+
+  --line-height-base: 1.5;
+  --line-height-tight: 1.2;
+
+  /* -------------------------------------------------------
+     3) ABSTANDS-SKALA
+  --------------------------------------------------------*/
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+
+  /* -------------------------------------------------------
+     4) BORDERS & RADII
+  --------------------------------------------------------*/
+  --border-thin: 1px;
+  --border-normal: 2px;
+  --border-thick: 3px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-round: 999px;
+
+  --border-color: #3a5066;
+  --border-color-light: #506880;
+
+  /* -------------------------------------------------------
+     5) SHADOWS (Elevation)
+  --------------------------------------------------------*/
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-md: 0 3px 6px rgba(0,0,0,0.15);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+
+  /* -------------------------------------------------------
+     6) LAYOUT & BREAKPOINTS
+  --------------------------------------------------------*/
+  --bp-mobile: 480px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1440px;
+
+  --container-narrow: 600px;
+  --container-default: 900px;
+  --container-wide: 1200px;
+
+  --z-base: 0;
+  --z-header: 10;
+  --z-overlay: 50;
+  --z-modal: 100;
+  --z-popup: 200;
+
+  /* -------------------------------------------------------
+     7) ANIMATIONEN
+  --------------------------------------------------------*/
+  --anim-fast: 120ms;
+  --anim-normal: 200ms;
+  --anim-slow: 350ms;
+
+  --ease-default: ease-in-out;
+}
