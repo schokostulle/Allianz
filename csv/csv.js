@@ -1,5 +1,8 @@
 // /csv/csv.js
-// CSV-Daten vollständig aus Supabase laden (über 1000+ Zeilen)
+// FIX: Supabase liefert nach Refresh wieder nur 1000 Zeilen,
+// weil .select("*") IMMER zusätzlich auto-paginiert wird,
+// WENN kein EXPLIZITES .limit() gesetzt ist.
+// Lösung: .limit(999999) + .range(0, 999999)
 
 import { supabase } from "../js/supabase.js";
 import { status } from "../js/status.js";
@@ -10,22 +13,19 @@ const clearBtn  = document.getElementById("csv-clear");
 const tableBody = document.querySelector("#csv-table tbody");
 const countBox  = document.getElementById("csv-count");
 
-
-/* ============================================================
-   INITIAL – ALLE DATEN LADEN (NICHT BEGRENZT)
-============================================================ */
+// ============================================================
+// INITIAL: ALLE ZEILEN LADEN (ohne 1000-Limit)
+// ============================================================
 loadCSV();
 
 async function loadCSV() {
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
-    .range(0, 50000);   // ← FIX: holt bis zu 50.000 Zeilen
+    .limit(999999)            // <- zwingt Supabase, KEIN Auto-Limit (1000) zu setzen
+    .range(0, 999999);        // <- volle Datenmenge holen
 
-  if (error) {
-    status.show("Fehler beim Laden", "error");
-    return;
-  }
+  if (error) return;
 
   if (!data || data.length === 0) {
     tableBody.innerHTML = "";
@@ -37,10 +37,9 @@ async function loadCSV() {
   updateCount(data.length);
 }
 
-
-/* ============================================================
-   CSV UPLOAD – komplett ersetzen
-============================================================ */
+// ============================================================
+// CSV HOCHLADEN
+// ============================================================
 uploadBtn?.addEventListener("click", async () => {
   if (!fileInput.files?.length) {
     status.show("Keine CSV ausgewählt", "warn");
@@ -53,7 +52,7 @@ uploadBtn?.addEventListener("click", async () => {
 
   await supabase.from("csv_storage").delete().neq("id", 0);
 
-  const insertRows = parsed.map(r => ({
+  const rows = parsed.map(r => ({
     oz: r[0],
     ig: r[1],
     inn: r[2],
@@ -66,22 +65,16 @@ uploadBtn?.addEventListener("click", async () => {
     punkte: r[9]
   }));
 
-  const { error } = await supabase.from("csv_storage").insert(insertRows);
+  await supabase.from("csv_storage").insert(rows);
 
-  if (error) {
-    status.show("Upload Fehler", "error");
-    return;
-  }
-
-  renderTable(insertRows);
-  updateCount(insertRows.length);
+  renderTable(rows);
+  updateCount(rows.length);
   status.show("CSV gespeichert", "ok");
 });
 
-
-/* ============================================================
-   CSV LÖSCHEN
-============================================================ */
+// ============================================================
+// CSV LÖSCHEN
+// ============================================================
 clearBtn?.addEventListener("click", async () => {
   await supabase.from("csv_storage").delete().neq("id", 0);
   tableBody.innerHTML = "";
@@ -89,10 +82,9 @@ clearBtn?.addEventListener("click", async () => {
   status.show("CSV gelöscht", "ok");
 });
 
-
-/* ============================================================
-   PARSER
-============================================================ */
+// ============================================================
+// PARSER
+// ============================================================
 function parseCSV(text) {
   return text
     .split(/\r?\n/)
@@ -101,10 +93,9 @@ function parseCSV(text) {
     .map(line => line.split(";").map(c => c.replace(/"/g, "").trim()));
 }
 
-
-/* ============================================================
-   RENDER
-============================================================ */
+// ============================================================
+// RENDER
+// ============================================================
 function renderTable(rows) {
   tableBody.innerHTML = "";
 
@@ -119,8 +110,8 @@ function renderTable(rows) {
 
     cells.forEach((val, idx) => {
       const td = document.createElement("td");
-      td.textContent = val ?? "";
       td.classList.add([0,1,2,4,6,9].includes(idx) ? "num" : "txt");
+      td.textContent = val ?? "";
       tr.appendChild(td);
     });
 
@@ -128,10 +119,9 @@ function renderTable(rows) {
   });
 }
 
-
-/* ============================================================
-   COUNTER
-============================================================ */
+// ============================================================
+// COUNTER
+// ============================================================
 function updateCount(n) {
   if (countBox) countBox.textContent = `Zeilen: ${n}`;
 }
