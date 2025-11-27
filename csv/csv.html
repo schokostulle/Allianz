@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <title>CSV</title>
 
-  <base href="../">
-
-  <link rel="stylesheet" href="css/root.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/root.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -48,14 +46,17 @@
 
   </main>
 
-  <script type="module" src="js/navigation.js"></script>
+  <!-- Navigation -->
+  <script type="module" src="/js/navigation.js"></script>
 
+  <!-- Kopfbereich -->
   <script type="module">
-    import { buildKopf } from "./js/kopf.js";
+    import { buildKopf } from "/js/kopf.js";
     buildKopf("CSV");
   </script>
 
-  <script type="module" src="csv/csv.js"></script>
+  <!-- CSV -->
+  <script type="module" src="/csv/csv.js"></script>
 
 </body>
 </html>
