@@ -21,8 +21,8 @@
   <script type="module" src="js/navigation.js"></script>
 
   <script type="module">
-    import { buildKopf } from "js/kopf.js";
-    import { requireAuth } from "js/auth.js";
+    import { buildKopf } from "./js/kopf.js";
+    import { requireAuth } from "./js/auth.js";
 
     await requireAuth();
     buildKopf("Dashboard");
