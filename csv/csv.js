@@ -2,7 +2,6 @@
 // CSV-Modul – Supabase Speicherung + Tabellen-Rendering
 
 import { supabase } from "../js/supabase.js";
-import { status } from "../js/status.js";
 
 /* optionale Status-Hilfe – funktioniert auch ohne status.js */
 function showStatus(msg, type = "info") {
