@@ -21,9 +21,7 @@ async function loadCSV() {
     const { data, error } = await supabase
       .from("csv_storage")
       .select("id, file")
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .order("id", { ascending: false });
 
     if (error || !data || !data.file) {
       tableBody.innerHTML = "";
