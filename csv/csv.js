@@ -19,7 +19,8 @@ async function loadCSV() {
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
-    .order("id", { ascending: true });
+    .order("id", { ascending: true })
+.range(0,2500);
 
   if (error) {
     status.show("Fehler beim Laden", "error");
