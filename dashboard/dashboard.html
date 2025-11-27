@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Dashboard</title>
 
+  <!-- Basis-Pfad für GitHub Pages -->
   <base href="../">
 
   <link rel="stylesheet" href="css/root.css">
@@ -18,13 +19,12 @@
     <div id="kopf"></div>
   </main>
 
+  <!-- Navigation -->
   <script type="module" src="js/navigation.js"></script>
 
+  <!-- Kopfbereich -->
   <script type="module">
-    import { buildKopf } from "./js/kopf.js";
-    import { requireAuth } from "./js/auth.js";
-
-    await requireAuth();
+    import { buildKopf } from "js/kopf.js";
     buildKopf("Dashboard");
   </script>
 
