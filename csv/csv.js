@@ -1,8 +1,8 @@
 // /csv/csv.js
 // CSV-Modul – Supabase Speicherung + Tabellen-Rendering
 
-import { supabase } from "../js/supabase.js";
-import { status } from "../js/status.js";
+import { supabase } from "./js/supabase.js";
+import { status } from "./js/status.js";
 
 /* DOM Elemente */
 const fileInput = document.getElementById("csv-file");
