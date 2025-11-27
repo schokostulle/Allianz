@@ -29,5 +29,5 @@ document.addEventListener("click", async (e) => {
 
   await supabase.auth.signOut();
   sessionStorage.clear();
-  window.location.href = "/index.html";
+  window.location.href = "index.html";
 });
