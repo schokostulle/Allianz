@@ -17,17 +17,12 @@ const status = (() => {
 
     bar.textContent = msg;
 
-    bar.style.background =
-      type === "ok" ? "var(--color-ok)" :
-      type === "warn" ? "var(--color-warn)" :
-      type === "error" ? "var(--color-error)" :
-      "var(--color-info)";
-
-    bar.classList.remove("hidden");
+    bar.className = "";
     bar.classList.add("show");
+    bar.classList.add(`status-${type}`);
 
     clearTimeout(timeout);
-    timeout = setTimeout(() => clear(), duration);
+    timeout = setTimeout(clear, duration);
   }
 
   function clear() {
@@ -36,9 +31,9 @@ const status = (() => {
     bar.classList.remove("show");
 
     setTimeout(() => {
-      bar.classList.add("hidden");
+      bar.className = "hidden";
       bar.textContent = "";
-    }, 300);
+    }, 250);
   }
 
   return { show, clear };
