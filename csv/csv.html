@@ -4,23 +4,24 @@
   <meta charset="UTF-8">
   <title>CSV</title>
 
+  <!-- CSS – korrekt relativ zum csv/ Verzeichnis -->
   <link rel="stylesheet" href="../css/root.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
 
+  <!-- Navigation -->
   <aside id="nav"></aside>
 
   <main>
+    <!-- Kopfbereich -->
     <div id="kopf"></div>
 
     <div class="csv-controls">
       <input type="file" id="csv-file" accept=".csv">
       <button id="csv-upload">Upload</button>
       <button id="csv-clear">Löschen</button>
-
-      <!-- COUNTER -->
       <span id="csv-count"></span>
     </div>
 
@@ -46,16 +47,16 @@
 
   </main>
 
-  <!-- Navigation -->
+  <!-- Navigation Script -->
   <script type="module" src="../js/navigation.js"></script>
 
-  <!-- Kopfbereich -->
+  <!-- Kopfbereich korrekt geladen -->
   <script type="module">
-    import { buildKopf } from "./js/kopf.js";
+    import { buildKopf } from "../js/kopf.js";
     buildKopf("CSV");
   </script>
 
-  <!-- CSV -->
+  <!-- CSV Modul -->
   <script type="module" src="../csv/csv.js"></script>
 
 </body>
