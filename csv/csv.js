@@ -76,17 +76,17 @@ if (uploadBtn) {
       }
 
       const insertPayload = parsedRows.map(row => ({
-        oz: row[0],
-        ig: row[1],
-        inn: row[2],
-        inselname: row[3],
-        sid: row[4],
-        spielername: row[5],
-        aid: row[6],
-        allianz_kuerzel: row[7],
-        allianz_name: row[8],
-        punkte: row[9]
-      }));
+  oz: parseInt(row[0]) || 0,
+  ig: parseInt(row[1]) || 0,
+  inn: parseInt(row[2]) || 0,
+  inselname: row[3] || "",
+  sid: parseInt(row[4]) || 0,
+  spielername: row[5] || "",
+  aid: parseInt(row[6]) || 0,
+  allianz_kuerzel: row[7] || "",
+  allianz_name: row[8] || "",
+  punkte: parseInt(row[9]) || 0
+}));
 
       const { error } = await supabase
         .from("csv_storage")
