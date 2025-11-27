@@ -1,137 +1,110 @@
 // /csv/csv.js
-// CSV-Modul – Supabase Speicherung + Tabellen-Rendering
+// CSV-Modul – Supabase-Speicher (ein Feld file) + Tabellen-Rendering
 
 import { supabase } from "../js/supabase.js";
+import { status } from "../js/status.js";
 
-/* optionale Status-Hilfe – funktioniert auch ohne status.js */
-function showStatus(msg, type = "info") {
-  if (window.status && typeof status.show === "function") {
-    status.show(msg, type);
-  } else {
-    console.log(`[${type}] ${msg}`);
-  }
-}
+/* DOM-Elemente */
+const fileInput   = document.getElementById("csv-file");
+const uploadBtn   = document.getElementById("csv-upload");
+const clearBtn    = document.getElementById("csv-clear");
+const tableBody   = document.querySelector("#csv-table tbody");
+const nameSpan    = document.getElementById("csv-name"); // optional, falls vorhanden
 
-/* DOM Elemente */
-const fileInput = document.getElementById("csv-file");
-const uploadBtn = document.getElementById("csv-upload");
-const clearBtn = document.getElementById("csv-clear");
-const tableBody = document.querySelector("#csv-table tbody");
+// ============================================================
+// INITIAL LADEN
+// ============================================================
+loadCSV();
 
-/* ============================================
-   INITIAL LADEN
-============================================ */
-loadFromSupabase();
 
-/* ============================================
-   CSV AUS SUPABASE LADEN
-============================================ */
-async function loadFromSupabase() {
-
-  const { data, error } = await supabase
-    .from("csv_storage")
-    .select("*", { count: "exact", head: false })   // <- FIX
-    .order("id", { ascending: true });
-
-  if (error) {
-    status.show("Fehler beim Laden", "error");
-    return;
-  }
-
-  tableBody.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    status.show("Keine CSV-Daten vorhanden", "info");
-    return;
-  }
-
-  data.forEach(row => renderRow(row));
-}
-
-/* ============================================
-   CSV UPLOAD
-============================================ */
-if (uploadBtn) {
-  uploadBtn.addEventListener("click", async () => {
-    const file = fileInput?.files?.[0];
-    if (!file) {
-      showStatus("Keine Datei ausgewählt", "warn");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = async (e) => {
-      const text = e.target.result;
-      const parsedRows = parseCSV(text);
-
-      if (!parsedRows || parsedRows.length === 0) {
-        showStatus("CSV leer oder ungültig", "error");
-        return;
-      }
-
-      const del = await supabase.from("csv_storage").delete().neq("id", 0);
-      if (del.error) {
-        showStatus("Fehler beim Löschen", "error");
-        return;
-      }
-
-      const insertPayload = parsedRows.map(row => ({
-        oz: row[0],
-        ig: row[1],
-        inn: row[2],
-        inselname: row[3],
-        sid: row[4],
-        spielername: row[5],
-        aid: row[6],
-        allianz_kuerzel: row[7],
-        allianz_name: row[8],
-        punkte: row[9]
-      }));
-
-      const { error } = await supabase
-        .from("csv_storage")
-        .insert(insertPayload);
-
-      if (error) {
-        showStatus("Upload fehlgeschlagen", "error");
-        return;
-      }
-
-      showStatus("CSV gespeichert", "ok");
-      loadFromSupabase();
-    };
-
-    reader.readAsText(file, "UTF-8");
-  });
-}
-
-/* ============================================
-   CSV LÖSCHEN
-============================================ */
-if (clearBtn) {
-  clearBtn.addEventListener("click", async () => {
-    const { error } = await supabase
+// ============================================================
+// CSV LADEN (ein Datensatz, Feld: file)
+// ============================================================
+async function loadCSV() {
+  try {
+    const { data, error } = await supabase
       .from("csv_storage")
-      .delete()
-      .neq("id", 0);
+      .select("file")
+      .eq("id", 1)
+      .maybeSingle();
 
     if (error) {
-      showStatus("Fehler beim Löschen", "error");
+      status.show("Fehler beim Laden der CSV.", "error");
+      tableBody.innerHTML = "";
+      if (nameSpan) nameSpan.textContent = "Fehler";
       return;
     }
 
+    if (!data || !data.file) {
+      tableBody.innerHTML = "";
+      if (nameSpan) nameSpan.textContent = "Keine Datei";
+      return;
+    }
+
+    const rows = parseCSV(data.file);
+    renderTable(rows);
+    if (nameSpan) nameSpan.textContent = "CSV aus Speicher";
+  } catch {
+    status.show("Fehler beim Laden der CSV.", "error");
     tableBody.innerHTML = "";
-    showStatus("CSV gelöscht", "ok");
-  });
+    if (nameSpan) nameSpan.textContent = "Fehler";
+  }
 }
 
-/* ============================================
-   CSV PARSER
-============================================ */
+
+// ============================================================
+// CSV HOCHLADEN (ersetzt bisherigen Inhalt komplett)
+// ============================================================
+uploadBtn?.addEventListener("click", async () => {
+  if (!fileInput.files?.length) {
+    status.show("Keine CSV ausgewählt.", "warn");
+    return;
+  }
+
+  try {
+    const file = fileInput.files[0];
+    const text = await file.text();
+
+    await supabase
+      .from("csv_storage")
+      .upsert({ id: 1, file: text }); // ein Datensatz, id = 1
+
+    const rows = parseCSV(text);
+    renderTable(rows);
+
+    if (nameSpan) nameSpan.textContent = file.name;
+    status.show("CSV gespeichert.", "ok");
+  } catch {
+    status.show("Fehler beim Speichern der CSV.", "error");
+  }
+});
+
+
+// ============================================================
+// CSV LÖSCHEN
+// ============================================================
+clearBtn?.addEventListener("click", async () => {
+  try {
+    await supabase
+      .from("csv_storage")
+      .delete()
+      .eq("id", 1);
+
+    tableBody.innerHTML = "";
+    if (nameSpan) nameSpan.textContent = "Keine Datei";
+    status.show("CSV gelöscht.", "ok");
+  } catch {
+    status.show("Fehler beim Löschen der CSV.", "error");
+  }
+});
+
+
+// ============================================================
+// CSV PARSER – Semikolon-getrennt, keine Kopfzeile
+// ============================================================
 function parseCSV(text) {
   return text
-    .split("\n")
+    .split(/\r?\n/)
     .map(line => line.trim())
     .filter(line => line.length > 0)
     .map(line =>
@@ -141,37 +114,41 @@ function parseCSV(text) {
     );
 }
 
-/* ============================================
-   TABELLE RENDERN
-============================================ */
-function renderRow(row) {
-  const tr = document.createElement("tr");
 
-  const cells = [
-    row.oz,
-    row.ig,
-    row.inn,
-    row.inselname,
-    row.sid,
-    row.spielername,
-    row.aid,
-    row.allianz_kuerzel,
-    row.allianz_name,
-    row.punkte
-  ];
+// ============================================================
+// TABELLE RENDERN – nutzt globale Tabellenklassen (style.css)
+// ============================================================
+function renderTable(rows) {
+  tableBody.innerHTML = "";
 
-  cells.forEach((val, index) => {
-    const td = document.createElement("td");
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
 
-    if ([0, 1, 2, 4, 6, 9].includes(index)) {
-      td.classList.add("num");
-    } else {
-      td.classList.add("txt");
-    }
+    // Erwartete Struktur:
+    // [0] Oz (num)
+    // [1] Ig (num)
+    // [2] In (num)
+    // [3] Inselname (txt)
+    // [4] SID (num)
+    // [5] Spielername (txt)
+    // [6] AID (num)
+    // [7] Allianzk. (txt)
+    // [8] Allianzname (txt)
+    // [9] Punkte (num)
 
-    td.textContent = val ?? "";
-    tr.appendChild(td);
+    row.forEach((val, index) => {
+      const td = document.createElement("td");
+
+      if ([0, 1, 2, 4, 6, 9].includes(index)) {
+        td.classList.add("num");
+      } else {
+        td.classList.add("txt");
+      }
+
+      td.textContent = val ?? "";
+      tr.appendChild(td);
+    });
+
+    tableBody.appendChild(tr);
   });
-
-  tableBody.appendChild(tr);
 }
