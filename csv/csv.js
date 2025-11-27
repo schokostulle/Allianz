@@ -1,8 +1,16 @@
 // /csv/csv.js
 // CSV-Modul – Supabase Speicherung + Tabellen-Rendering
 
-import { supabase } from "js/supabase.js";
-import { status } from "js/status.js";
+import { supabase } from "../js/supabase.js";
+
+/* optionale Status-Hilfe – funktioniert auch ohne status.js */
+function showStatus(msg, type = "info") {
+  if (window.status && typeof status.show === "function") {
+    status.show(msg, type);
+  } else {
+    console.log(`[${type}] ${msg}`);
+  }
+}
 
 /* DOM Elemente */
 const fileInput = document.getElementById("csv-file");
@@ -15,109 +23,107 @@ const tableBody = document.querySelector("#csv-table tbody");
 ============================================ */
 loadFromSupabase();
 
-
 /* ============================================
    CSV AUS SUPABASE LADEN
 ============================================ */
 async function loadFromSupabase() {
-
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
     .order("id", { ascending: true });
 
+  tableBody.innerHTML = "";
+
   if (error) {
-    status.show("Fehler beim Laden", "error");
+    showStatus("Fehler beim Laden", "error");
     return;
   }
 
-  tableBody.innerHTML = "";
-
   if (!data || data.length === 0) {
-    status.show("Keine CSV-Daten vorhanden", "info");
+    showStatus("Keine CSV-Daten vorhanden", "info");
     return;
   }
 
   data.forEach(row => renderRow(row));
 }
 
-
 /* ============================================
    CSV UPLOAD
 ============================================ */
-uploadBtn.addEventListener("click", async () => {
-  const file = fileInput.files[0];
-
-  if (!file) {
-    status.show("Keine Datei ausgewählt", "warn");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = async (e) => {
-    const text = e.target.result;
-    const parsedRows = parseCSV(text);
-
-    if (!parsedRows || parsedRows.length === 0) {
-      status.show("CSV leer oder ungültig", "error");
+if (uploadBtn) {
+  uploadBtn.addEventListener("click", async () => {
+    const file = fileInput?.files?.[0];
+    if (!file) {
+      showStatus("Keine Datei ausgewählt", "warn");
       return;
     }
 
-    // Alte Daten entfernen
-    const del = await supabase.from("csv_storage").delete().neq("id", 0);
-    if (del.error) {
-      status.show("Fehler beim Löschen", "error");
-      return;
-    }
+    const reader = new FileReader();
 
-    // Neue Daten vorbereiten
-    const insertPayload = parsedRows.map(row => ({
-      oz: row[0],
-      ig: row[1],
-      inn: row[2],
-      inselname: row[3],
-      sid: row[4],
-      spielername: row[5],
-      aid: row[6],
-      allianz_kuerzel: row[7],
-      allianz_name: row[8],
-      punkte: row[9]
-    }));
+    reader.onload = async (e) => {
+      const text = e.target.result;
+      const parsedRows = parseCSV(text);
 
-    const { error } = await supabase
-      .from("csv_storage")
-      .insert(insertPayload);
+      if (!parsedRows || parsedRows.length === 0) {
+        showStatus("CSV leer oder ungültig", "error");
+        return;
+      }
 
-    if (error) {
-      status.show("Upload fehlgeschlagen", "error");
-      return;
-    }
+      const del = await supabase.from("csv_storage").delete().neq("id", 0);
+      if (del.error) {
+        showStatus("Fehler beim Löschen", "error");
+        return;
+      }
 
-    status.show("CSV gespeichert", "ok");
-    loadFromSupabase();
-  };
+      const insertPayload = parsedRows.map(row => ({
+        oz: row[0],
+        ig: row[1],
+        inn: row[2],
+        inselname: row[3],
+        sid: row[4],
+        spielername: row[5],
+        aid: row[6],
+        allianz_kuerzel: row[7],
+        allianz_name: row[8],
+        punkte: row[9]
+      }));
 
-  reader.readAsText(file, "UTF-8");
-});
+      const { error } = await supabase
+        .from("csv_storage")
+        .insert(insertPayload);
 
+      if (error) {
+        showStatus("Upload fehlgeschlagen", "error");
+        return;
+      }
+
+      showStatus("CSV gespeichert", "ok");
+      loadFromSupabase();
+    };
+
+    reader.readAsText(file, "UTF-8");
+  });
+}
 
 /* ============================================
    CSV LÖSCHEN
 ============================================ */
-clearBtn.addEventListener("click", async () => {
+if (clearBtn) {
+  clearBtn.addEventListener("click", async () => {
+    const { error } = await supabase
+      .from("csv_storage")
+      .delete()
+      .neq("id", 0);
 
-  const { error } = await supabase.from("csv_storage").delete().neq("id", 0);
+    if (error) {
+      showStatus("Fehler beim Löschen", "error");
+      return;
+    }
 
-  if (error) {
-    status.show("Fehler beim Löschen", "error");
-    return;
-  }
-
-  tableBody.innerHTML = "";
-  status.show("CSV gelöscht", "ok");
-});
-
+    tableBody.innerHTML = "";
+    showStatus("CSV gelöscht", "ok");
+  });
+}
 
 /* ============================================
    CSV PARSER
@@ -133,7 +139,6 @@ function parseCSV(text) {
       )
     );
 }
-
 
 /* ============================================
    TABELLE RENDERN
