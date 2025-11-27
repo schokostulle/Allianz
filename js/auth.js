@@ -26,25 +26,25 @@ export async function loadProfile() {
 export async function requireAuth(roles = ["Admin", "Member"]) {
   const session = await getSession();
   if (!session) {
-    window.location.href = "/index.html";
+    window.location.href = "index.html";
     return;
   }
 
   const profile = await loadProfile();
   if (!profile) {
-    window.location.href = "/index.html";
+    window.location.href = "index.html";
     return;
   }
 
   if (!roles.includes(profile.role)) {
-    window.location.href = "/index.html";
+    window.location.href = "index.html";
     return;
   }
 
   if (profile.status !== "aktiv") {
     await supabase.auth.signOut();
     sessionStorage.clear();
-    window.location.href = "/index.html";
+    window.location.href = "index.html";
     return;
   }
 
