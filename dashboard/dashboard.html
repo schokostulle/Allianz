@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+
+  <base href="../">
+
+  <link rel="stylesheet" href="css/root.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <aside id="nav"></aside>
+
+  <main>
+    <div id="kopf"></div>
+  </main>
+
+  <script type="module" src="js/navigation.js"></script>
+
+  <script type="module">
+    import { buildKopf } from "js/kopf.js";
+    import { requireAuth } from "js/auth.js";
+
+    await requireAuth();
+    buildKopf("Dashboard");
+  </script>
+
+</body>
+</html>
