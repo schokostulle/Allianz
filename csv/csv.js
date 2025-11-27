@@ -20,7 +20,6 @@ loadFromSupabase();
    CSV AUS SUPABASE LADEN
 ============================================ */
 async function loadFromSupabase() {
-  tableBody.innerHTML = "";
 
   const { data, error } = await supabase
     .from("csv_storage")
@@ -32,12 +31,13 @@ async function loadFromSupabase() {
     return;
   }
 
+  tableBody.innerHTML = "";
+
   if (!data || data.length === 0) {
     status.show("Keine CSV-Daten vorhanden", "info");
     return;
   }
 
-  // Daten aus Supabase enthalten bereits fertige Arrays
   data.forEach(row => renderRow(row));
 }
 
@@ -47,6 +47,7 @@ async function loadFromSupabase() {
 ============================================ */
 uploadBtn.addEventListener("click", async () => {
   const file = fileInput.files[0];
+
   if (!file) {
     status.show("Keine Datei ausgewählt", "warn");
     return;
@@ -56,18 +57,22 @@ uploadBtn.addEventListener("click", async () => {
 
   reader.onload = async (e) => {
     const text = e.target.result;
-    const parsed = parseCSV(text);
+    const parsedRows = parseCSV(text);
 
-    if (!parsed || parsed.length === 0) {
-      status.show("CSV ist leer oder ungültig", "error");
+    if (!parsedRows || parsedRows.length === 0) {
+      status.show("CSV leer oder ungültig", "error");
       return;
     }
 
-    /* --- Alte Tabelle vollständig löschen --- */
-    await supabase.from("csv_storage").delete().neq("id", 0);
+    // Alte Daten entfernen
+    const del = await supabase.from("csv_storage").delete().neq("id", 0);
+    if (del.error) {
+      status.show("Fehler beim Löschen", "error");
+      return;
+    }
 
-    /* --- Neue Zeilen einfügen --- */
-    const insertPayload = parsed.map(row => ({
+    // Neue Daten vorbereiten
+    const insertPayload = parsedRows.map(row => ({
       oz: row[0],
       ig: row[1],
       inn: row[2],
@@ -80,14 +85,16 @@ uploadBtn.addEventListener("click", async () => {
       punkte: row[9]
     }));
 
-    const { error } = await supabase.from("csv_storage").insert(insertPayload);
+    const { error } = await supabase
+      .from("csv_storage")
+      .insert(insertPayload);
 
     if (error) {
       status.show("Upload fehlgeschlagen", "error");
       return;
     }
 
-    status.show("CSV erfolgreich gespeichert", "ok");
+    status.show("CSV gespeichert", "ok");
     loadFromSupabase();
   };
 
@@ -99,7 +106,14 @@ uploadBtn.addEventListener("click", async () => {
    CSV LÖSCHEN
 ============================================ */
 clearBtn.addEventListener("click", async () => {
-  await supabase.from("csv_storage").delete().neq("id", 0);
+
+  const { error } = await supabase.from("csv_storage").delete().neq("id", 0);
+
+  if (error) {
+    status.show("Fehler beim Löschen", "error");
+    return;
+  }
+
   tableBody.innerHTML = "";
   status.show("CSV gelöscht", "ok");
 });
@@ -107,26 +121,22 @@ clearBtn.addEventListener("click", async () => {
 
 /* ============================================
    CSV PARSER
-   → entfernt Quotes
-   → trimmt Leerzeichen
 ============================================ */
 function parseCSV(text) {
-  const rows = text
+  return text
     .split("\n")
-    .map(r => r.trim())
-    .filter(r => r.length > 0)
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
     .map(line =>
       line.split(";").map(cell =>
         cell.replace(/"/g, "").trim()
       )
     );
-
-  return rows;
 }
 
 
 /* ============================================
-   RENDER
+   TABELLE RENDERN
 ============================================ */
 function renderRow(row) {
   const tr = document.createElement("tr");
@@ -144,17 +154,16 @@ function renderRow(row) {
     row.punkte
   ];
 
-  cells.forEach((value, index) => {
+  cells.forEach((val, index) => {
     const td = document.createElement("td");
 
-    // numerische Spalten
-    if ([0,1,2,4,6,9].includes(index)) {
+    if ([0, 1, 2, 4, 6, 9].includes(index)) {
       td.classList.add("num");
     } else {
       td.classList.add("txt");
     }
 
-    td.textContent = value ?? "";
+    td.textContent = val ?? "";
     tr.appendChild(td);
   });
 
