@@ -1,5 +1,5 @@
 // /csv/csv.js
-// EXISTIERENDE SUPABASE-DATEN LADEN (ALLE ZEILEN), CSV ERSETZT SPÄTER ALLES
+// CSV-Daten vollständig aus Supabase laden (über 1000+ Zeilen)
 
 import { supabase } from "../js/supabase.js";
 import { status } from "../js/status.js";
@@ -10,8 +10,9 @@ const clearBtn  = document.getElementById("csv-clear");
 const tableBody = document.querySelector("#csv-table tbody");
 const countBox  = document.getElementById("csv-count");
 
+
 /* ============================================================
-   INITIAL LADEN – ALLE VORHANDENEN ZEILEN ZEIGEN
+   INITIAL – ALLE DATEN LADEN (NICHT BEGRENZT)
 ============================================================ */
 loadCSV();
 
@@ -19,8 +20,7 @@ async function loadCSV() {
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
-    .order("id", { ascending: true })
-.range(0,2500);
+    .range(0, 50000);   // ← FIX: holt bis zu 50.000 Zeilen
 
   if (error) {
     status.show("Fehler beim Laden", "error");
@@ -37,8 +37,9 @@ async function loadCSV() {
   updateCount(data.length);
 }
 
+
 /* ============================================================
-   CSV HOCHLADEN – ALTE SUPABASE DATEN LÖSCHEN → NEU SCHREIBEN
+   CSV UPLOAD – komplett ersetzen
 ============================================================ */
 uploadBtn?.addEventListener("click", async () => {
   if (!fileInput.files?.length) {
@@ -50,10 +51,8 @@ uploadBtn?.addEventListener("click", async () => {
   const text = await file.text();
   const parsed = parseCSV(text);
 
-  // alte Zeilen entfernen
   await supabase.from("csv_storage").delete().neq("id", 0);
 
-  // neue Zeilen einfügen
   const insertRows = parsed.map(r => ({
     oz: r[0],
     ig: r[1],
@@ -67,9 +66,7 @@ uploadBtn?.addEventListener("click", async () => {
     punkte: r[9]
   }));
 
-  const { error } = await supabase
-    .from("csv_storage")
-    .insert(insertRows);
+  const { error } = await supabase.from("csv_storage").insert(insertRows);
 
   if (error) {
     status.show("Upload Fehler", "error");
@@ -78,9 +75,9 @@ uploadBtn?.addEventListener("click", async () => {
 
   renderTable(insertRows);
   updateCount(insertRows.length);
-
   status.show("CSV gespeichert", "ok");
 });
+
 
 /* ============================================================
    CSV LÖSCHEN
@@ -92,6 +89,7 @@ clearBtn?.addEventListener("click", async () => {
   status.show("CSV gelöscht", "ok");
 });
 
+
 /* ============================================================
    PARSER
 ============================================================ */
@@ -102,6 +100,7 @@ function parseCSV(text) {
     .filter(l => l.length)
     .map(line => line.split(";").map(c => c.replace(/"/g, "").trim()));
 }
+
 
 /* ============================================================
    RENDER
@@ -128,6 +127,7 @@ function renderTable(rows) {
     tableBody.appendChild(tr);
   });
 }
+
 
 /* ============================================================
    COUNTER
