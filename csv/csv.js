@@ -24,8 +24,7 @@ async function loadFromSupabase() {
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
-    .order("id", { ascending: true })
-    .limit(2500); // <-- wichtig: mehr als 1000 Zeilen holen
+    .order("id", { ascending: true });
 
   if (error) {
     status.show("Fehler beim Laden", "error");
