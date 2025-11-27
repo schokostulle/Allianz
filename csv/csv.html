@@ -2,13 +2,17 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>CSV</title>
 
-  <!-- Basis-Pfad für GitHub Pages -->
+  <!-- GitHub Pages Basis -->
   <base href="../">
 
+  <!-- globale Styles -->
   <link rel="stylesheet" href="css/root.css">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- modul-spezifisch -->
+  <link rel="stylesheet" href="csv/csv.css">
 </head>
 
 <body>
@@ -16,32 +20,35 @@
   <aside id="nav"></aside>
 
   <main>
+
     <div id="kopf"></div>
 
- <div class="csv-controls">
+    <div class="csv-controls">
       <input type="file" id="csv-file" accept=".csv">
       <button id="csv-upload">Upload</button>
       <button id="csv-clear">Löschen</button>
     </div>
-<div class="csv-table-wrapper">
-    <table id="csv-table">
-      <thead>
-        <tr>
-          <th class="num">Oz</th>
-          <th class="num">Ig</th>
-          <th class="num">In</th>
-          <th class="txt">Inselname</th>
-          <th class="num">SID</th>
-          <th class="txt">Spielername</th>
-          <th class="num">AID</th>
-          <th class="txt">Allianzk.</th>
-          <th class="txt">Allianzname</th>
-          <th class="num">Punkte</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-     </table>
-</div>
+
+    <div class="csv-table-wrapper">
+      <table id="csv-table">
+        <thead>
+          <tr>
+            <th class="num">Oz</th>
+            <th class="num">Ig</th>
+            <th class="num">In</th>
+            <th class="txt">Inselname</th>
+            <th class="num">SID</th>
+            <th class="txt">Spielername</th>
+            <th class="num">AID</th>
+            <th class="txt">Allianzk.</th>
+            <th class="txt">Allianzname</th>
+            <th class="num">Punkte</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
   </main>
 
   <!-- Navigation -->
@@ -49,9 +56,12 @@
 
   <!-- Kopfbereich -->
   <script type="module">
-    import { buildKopf } from "./js/kopf.js";
+    import { buildKopf } from "js/kopf.js";
     buildKopf("CSV");
   </script>
+
+  <!-- CSV Modul -->
+  <script type="module" src="csv/csv.js"></script>
 
 </body>
 </html>
