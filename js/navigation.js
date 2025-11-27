@@ -1,6 +1,6 @@
 // /js/navigation.js
 
-import { supabase } from "js/supabase.js";
+import { supabase } from "./supabase.js"; // <-- WICHTIG: ./ statt js/...
 
 const nav = document.getElementById("nav");
 
@@ -25,12 +25,11 @@ if (nav) {
   `;
 }
 
-/* LOGOUT HANDLER */
+/* Logout */
 document.addEventListener("click", async (e) => {
   if (!e.target.matches("[data-logout]")) return;
 
   await supabase.auth.signOut();
   sessionStorage.clear();
-
   window.location.href = "index.html";
 });
