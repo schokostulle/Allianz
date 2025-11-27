@@ -30,8 +30,7 @@ async function loadFromSupabase() {
   const { data, error } = await supabase
     .from("csv_storage")
     .select("*")
-    .order("id", { ascending: true })
-    .render(0, 2500);
+    .order("id", { ascending: true });
 
   tableBody.innerHTML = "";
 
