@@ -31,7 +31,7 @@ async function loadFromSupabase() {
     .from("csv_storage")
     .select("*")
     .order("id", { ascending: true });
-    .range(0, total);
+    .range(0, 2500);
 
   tableBody.innerHTML = "";
 
