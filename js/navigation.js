@@ -23,7 +23,7 @@ if (nav) {
   `;
 }
 
-/* Logout handler */
+/* Logout */
 document.addEventListener("click", async (e) => {
   if (!e.target.matches("[data-logout]")) return;
 
