@@ -1,5 +1,5 @@
-import { supabase } from "/js/supabase.js";
-import { loadProfile } from "/js/auth.js";
+import { supabase } from "js/supabase.js";
+import { loadProfile } from "js/auth.js";
 
 const DOMAIN = "@logbuch.fake";
 
