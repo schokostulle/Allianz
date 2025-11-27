@@ -1,5 +1,5 @@
-import { supabase } from "js/supabase.js";
-import { loadProfile } from "js/auth.js";
+import { supabase } from "./supabase.js";
+import { loadProfile } from "./auth.js";
 
 const DOMAIN = "@logbuch.fake";
 
@@ -58,7 +58,7 @@ if (loginForm) {
       return;
     }
 
-    window.location.href = "/dashboard/dashboard.html";
+    window.location.href = "dashboard/dashboard.html";
   });
 }
 
