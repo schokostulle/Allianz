@@ -1,15 +1,14 @@
 // /csv/csv.js
-// CSV-Modul – Supabase-Speicher (ein Feld file) + Tabellen-Rendering
 
 import { supabase } from "../js/supabase.js";
 import { status } from "../js/status.js";
 
 /* DOM-Elemente */
-const fileInput   = document.getElementById("csv-file");
-const uploadBtn   = document.getElementById("csv-upload");
-const clearBtn    = document.getElementById("csv-clear");
-const tableBody   = document.querySelector("#csv-table tbody");
-const nameSpan    = document.getElementById("csv-name"); // optional, falls vorhanden
+const fileInput = document.getElementById("csv-file");
+const uploadBtn = document.getElementById("csv-upload");
+const clearBtn = document.getElementById("csv-clear");
+const tableBody = document.querySelector("#csv-table tbody");
+const countBox = document.getElementById("csv-count");
 
 // ============================================================
 // INITIAL LADEN
@@ -18,7 +17,7 @@ loadCSV();
 
 
 // ============================================================
-// CSV LADEN (ein Datensatz, Feld: file)
+// CSV LADEN (ein Datensatz, Feld "file")
 // ============================================================
 async function loadCSV() {
   try {
@@ -28,52 +27,47 @@ async function loadCSV() {
       .eq("id", 1)
       .maybeSingle();
 
-    if (error) {
-      status.show("Fehler beim Laden der CSV.", "error");
+    if (error || !data || !data.file) {
       tableBody.innerHTML = "";
-      if (nameSpan) nameSpan.textContent = "Fehler";
-      return;
-    }
-
-    if (!data || !data.file) {
-      tableBody.innerHTML = "";
-      if (nameSpan) nameSpan.textContent = "Keine Datei";
+      updateRowCount(0);
       return;
     }
 
     const rows = parseCSV(data.file);
     renderTable(rows);
-    if (nameSpan) nameSpan.textContent = "CSV aus Speicher";
+    updateRowCount(rows.length);
+
   } catch {
-    status.show("Fehler beim Laden der CSV.", "error");
     tableBody.innerHTML = "";
-    if (nameSpan) nameSpan.textContent = "Fehler";
+    updateRowCount(0);
+    status.show("Fehler beim Laden der CSV.", "error");
   }
 }
 
 
 // ============================================================
-// CSV HOCHLADEN (ersetzt bisherigen Inhalt komplett)
+// CSV HOCHLADEN
 // ============================================================
 uploadBtn?.addEventListener("click", async () => {
   if (!fileInput.files?.length) {
-    status.show("Keine CSV ausgewählt.", "warn");
-    return;
+    return status.show("Keine CSV ausgewählt.", "warn");
   }
 
   try {
     const file = fileInput.files[0];
     const text = await file.text();
 
-    await supabase
-      .from("csv_storage")
-      .upsert({ id: 1, file: text }); // ein Datensatz, id = 1
+    await supabase.from("csv_storage").upsert({
+      id: 1,
+      file: text
+    });
 
     const rows = parseCSV(text);
     renderTable(rows);
+    updateRowCount(rows.length);
 
-    if (nameSpan) nameSpan.textContent = file.name;
     status.show("CSV gespeichert.", "ok");
+
   } catch {
     status.show("Fehler beim Speichern der CSV.", "error");
   }
@@ -85,22 +79,21 @@ uploadBtn?.addEventListener("click", async () => {
 // ============================================================
 clearBtn?.addEventListener("click", async () => {
   try {
-    await supabase
-      .from("csv_storage")
-      .delete()
-      .eq("id", 1);
+    await supabase.from("csv_storage").delete().eq("id", 1);
 
     tableBody.innerHTML = "";
-    if (nameSpan) nameSpan.textContent = "Keine Datei";
+    updateRowCount(0);
+
     status.show("CSV gelöscht.", "ok");
+
   } catch {
-    status.show("Fehler beim Löschen der CSV.", "error");
+    status.show("Fehler beim Löschen.", "error");
   }
 });
 
 
 // ============================================================
-// CSV PARSER – Semikolon-getrennt, keine Kopfzeile
+// CSV PARSER
 // ============================================================
 function parseCSV(text) {
   return text
@@ -116,25 +109,13 @@ function parseCSV(text) {
 
 
 // ============================================================
-// TABELLE RENDERN – nutzt globale Tabellenklassen (style.css)
+// TABELLE RENDERN
 // ============================================================
 function renderTable(rows) {
   tableBody.innerHTML = "";
 
   rows.forEach(row => {
     const tr = document.createElement("tr");
-
-    // Erwartete Struktur:
-    // [0] Oz (num)
-    // [1] Ig (num)
-    // [2] In (num)
-    // [3] Inselname (txt)
-    // [4] SID (num)
-    // [5] Spielername (txt)
-    // [6] AID (num)
-    // [7] Allianzk. (txt)
-    // [8] Allianzname (txt)
-    // [9] Punkte (num)
 
     row.forEach((val, index) => {
       const td = document.createElement("td");
@@ -151,4 +132,14 @@ function renderTable(rows) {
 
     tableBody.appendChild(tr);
   });
+}
+
+
+// ============================================================
+// ZEILENANZAHL
+// ============================================================
+function updateRowCount(count) {
+  if (countBox) {
+    countBox.textContent = `Zeilen: ${count}`;
+  }
 }
