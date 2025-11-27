@@ -27,20 +27,21 @@ loadFromSupabase();
    CSV AUS SUPABASE LADEN
 ============================================ */
 async function loadFromSupabase() {
+
   const { data, error } = await supabase
     .from("csv_storage")
-    .select("*")
+    .select("*", { count: "exact", head: false })   // <- FIX
     .order("id", { ascending: true });
 
-  tableBody.innerHTML = "";
-
   if (error) {
-    showStatus("Fehler beim Laden", "error");
+    status.show("Fehler beim Laden", "error");
     return;
   }
 
+  tableBody.innerHTML = "";
+
   if (!data || data.length === 0) {
-    showStatus("Keine CSV-Daten vorhanden", "info");
+    status.show("Keine CSV-Daten vorhanden", "info");
     return;
   }
 
