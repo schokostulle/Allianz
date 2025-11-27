@@ -13,7 +13,7 @@ if (nav) {
       <a href="csv/csv.html">📄 CSV</a>
       <a href="fleet/fleet.html">🚢 Flotte</a>
       <a href="reports/reports.html">📜 Berichte</a>
-      <a href="crono/crono.html">⏱️ Auswertung</a>
+      <a href="chrono/chrono.html">⏱️ Auswertung</a>
       <a href="diplomacy/diplomacy.html">🕊️ Diplomatie</a>
       <a href="map/map.html">🗺️ Karte</a>
       <a href="reservation/reservation.html">🎯 Reservierungen</a>
