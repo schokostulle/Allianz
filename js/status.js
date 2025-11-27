@@ -1,4 +1,6 @@
-const status = (() => {
+// /js/status.js
+
+export const status = (() => {
   let bar = null;
   let timeout = null;
 
@@ -17,9 +19,9 @@ const status = (() => {
 
     bar.textContent = msg;
 
+    // Reset class
     bar.className = "";
-    bar.classList.add("show");
-    bar.classList.add(`status-${type}`);
+    bar.classList.add("show", `status-${type}`);
 
     clearTimeout(timeout);
     timeout = setTimeout(clear, duration);
