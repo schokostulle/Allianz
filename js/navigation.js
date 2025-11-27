@@ -1,5 +1,5 @@
 // /js/navigation.js
-// Navigation + Logout (optional supabase)
+// Navigation + Logout (Supabase optional)
 
 import { supabase } from "./supabase.js";  // korrekt relativ aus /js/
 
@@ -27,18 +27,19 @@ if (nav) {
 }
 
 /* ---------------------------------------------
-   LOGOUT (funktioniert auch ohne Supabase)
+   LOGOUT (supabase optional, sicher für GitHub Pages)
 --------------------------------------------- */
 document.addEventListener("click", async (e) => {
   if (!e.target.matches("[data-logout]")) return;
 
-  // kein Supabase? → Fehler ignorieren
   try {
     await supabase.auth.signOut();
-  } catch {}
+  } catch {
+    // Supabase optional → ignorieren
+  }
 
   sessionStorage.clear();
 
-  // absoluter Pfad → GitHub Pages sicher
-  window.location.href = "/index.html";
+  // keine absoluten Pfade → sicher für GitHub Pages
+  window.location.href = "../index.html";
 });
