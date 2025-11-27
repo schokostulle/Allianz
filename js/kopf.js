@@ -1,9 +1,12 @@
+// /js/kopf.js
+// Kopfbereich: Zeile 1 = User + Rolle, Zeile 2 = Modultitel
+
 export function buildKopf(title) {
   const container = document.getElementById("kopf");
   if (!container) return;
 
   const username = sessionStorage.getItem("username") || "Gast";
-  const role = sessionStorage.getItem("userRole") || "";
+  const role     = sessionStorage.getItem("userRole")  || "";
 
   container.innerHTML = `
     <div class="kopf-line1">
