@@ -1,4 +1,5 @@
 // /csv/csv.js
+// CSV-Modul – Supabase-Speicher (Feld file) + dauerhafte Tabellen-Ansicht
 
 import { supabase } from "../js/supabase.js";
 import { status } from "../js/status.js";
@@ -6,25 +7,22 @@ import { status } from "../js/status.js";
 /* DOM-Elemente */
 const fileInput = document.getElementById("csv-file");
 const uploadBtn = document.getElementById("csv-upload");
-const clearBtn = document.getElementById("csv-clear");
+const clearBtn  = document.getElementById("csv-clear");
 const tableBody = document.querySelector("#csv-table tbody");
-const countBox = document.getElementById("csv-count");
+const countBox  = document.getElementById("csv-count");
 
 // ============================================================
-// INITIAL LADEN
+// INITIAL LADEN – immer letzte gespeicherte CSV anzeigen
 // ============================================================
 loadCSV();
 
-
-// ============================================================
-// CSV LADEN (ein Datensatz, Feld "file")
-// ============================================================
 async function loadCSV() {
   try {
     const { data, error } = await supabase
       .from("csv_storage")
-      .select("file")
-      .eq("id", 1)
+      .select("id, file")
+      .order("id", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (error || !data || !data.file) {
@@ -36,7 +34,6 @@ async function loadCSV() {
     const rows = parseCSV(data.file);
     renderTable(rows);
     updateRowCount(rows.length);
-
   } catch {
     tableBody.innerHTML = "";
     updateRowCount(0);
@@ -44,53 +41,46 @@ async function loadCSV() {
   }
 }
 
-
 // ============================================================
-// CSV HOCHLADEN
+// CSV HOCHLADEN – ersetzt vorherige Datei logisch (neuer Datensatz)
 // ============================================================
 uploadBtn?.addEventListener("click", async () => {
   if (!fileInput.files?.length) {
-    return status.show("Keine CSV ausgewählt.", "warn");
+    status.show("Keine CSV ausgewählt.", "warn");
+    return;
   }
 
   try {
     const file = fileInput.files[0];
     const text = await file.text();
 
-    await supabase.from("csv_storage").upsert({
-      id: 1,
-      file: text
-    });
+    await supabase
+      .from("csv_storage")
+      .insert({ file: text });
 
     const rows = parseCSV(text);
     renderTable(rows);
     updateRowCount(rows.length);
 
     status.show("CSV gespeichert.", "ok");
-
   } catch {
     status.show("Fehler beim Speichern der CSV.", "error");
   }
 });
 
-
 // ============================================================
-// CSV LÖSCHEN
+// CSV LÖSCHEN – Ansicht leeren, Daten in DB optional mitlöschen
 // ============================================================
 clearBtn?.addEventListener("click", async () => {
   try {
-    await supabase.from("csv_storage").delete().eq("id", 1);
-
+    await supabase.from("csv_storage").delete().neq("id", 0);
     tableBody.innerHTML = "";
     updateRowCount(0);
-
     status.show("CSV gelöscht.", "ok");
-
   } catch {
-    status.show("Fehler beim Löschen.", "error");
+    status.show("Fehler beim Löschen der CSV.", "error");
   }
 });
-
 
 // ============================================================
 // CSV PARSER
@@ -106,7 +96,6 @@ function parseCSV(text) {
       )
     );
 }
-
 
 // ============================================================
 // TABELLE RENDERN
@@ -133,7 +122,6 @@ function renderTable(rows) {
     tableBody.appendChild(tr);
   });
 }
-
 
 // ============================================================
 // ZEILENANZAHL
