@@ -10,16 +10,16 @@ if (nav) {
     <div class="nav-header">⚓ Logbuch</div>
 
     <nav>
-      <a href="/dashboard/dashboard.html">🏠 Dashboard</a>
-      <a href="/csv/csv.html">📄 CSV</a>
-      <a href="/fleet/fleet.html">🚢 Flotte</a>
-      <a href="/reports/reports.html">📜 Berichte</a>
-      <a href="/chrono/chrono.html">⏱️ Auswertung</a>
-      <a href="/diplomacy/diplomacy.html">🕊️ Diplomatie</a>
-      <a href="/map/map.html">🗺️ Karte</a>
-      <a href="/reservation/reservation.html">🎯 Reservierungen</a>
-      <a href="/calculation/calculation.html">📐 Berechnung</a>
-      <a href="/member/member.html">👥 Member</a>
+      <a href="../dashboard/dashboard.html">🏠 Dashboard</a>
+      <a href="../csv/csv.html">📄 CSV</a>
+      <a href="../fleet/fleet.html">🚢 Flotte</a>
+      <a href="../reports/reports.html">📜 Berichte</a>
+      <a href="../chrono/chrono.html">⏱️ Auswertung</a>
+      <a href="../diplomacy/diplomacy.html">🕊️ Diplomatie</a>
+      <a href="../map/map.html">🗺️ Karte</a>
+      <a href="../reservation/reservation.html">🎯 Reservierungen</a>
+      <a href="../calculation/calculation.html">📐 Berechnung</a>
+      <a href="../member/member.html">👥 Member</a>
       <hr>
       <a data-logout>⛩️ Logout</a>
     </nav>
