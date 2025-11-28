@@ -1,7 +1,15 @@
 // /js/navigation.js
-// Navigation + Logout (Supabase optional)
+// Automatische Pfadkorrektur für GitHub Pages
 
-import { supabase } from "./supabase.js";  // korrekt relativ aus /js/
+import { supabase } from "./supabase.js";
+
+// Prüfen, ob wir im Root oder im Modul sind
+const depth = window.location.pathname.split("/").length - 2;
+
+// root    → 1
+// module  → 2
+
+const prefix = depth === 1 ? "" : "../";
 
 const nav = document.getElementById("nav");
 
@@ -10,36 +18,29 @@ if (nav) {
     <div class="nav-header">⚓ Logbuch</div>
 
     <nav>
-      <a href="../dashboard/dashboard.html">🏠 Dashboard</a>
-      <a href="../csv/csv.html">📄 CSV</a>
-      <a href="../fleet/fleet.html">🚢 Flotte</a>
-      <a href="../reports/reports.html">📜 Berichte</a>
-      <a href="../chrono/chrono.html">⏱️ Auswertung</a>
-      <a href="../diplomacy/diplomacy.html">🕊️ Diplomatie</a>
-      <a href="../map/map.html">🗺️ Karte</a>
-      <a href="../reservation/reservation.html">🎯 Reservierungen</a>
-      <a href="../calculation/calculation.html">📐 Berechnung</a>
-      <a href="../member/member.html">👥 Member</a>
+      <a href="${prefix}dashboard/dashboard.html">🏠 Dashboard</a>
+      <a href="${prefix}csv/csv.html">📄 CSV</a>
+      <a href="${prefix}fleet/fleet.html">🚢 Flotte</a>
+      <a href="${prefix}reports/reports.html">📜 Berichte</a>
+      <a href="${prefix}chrono/chrono.html">⏱️ Auswertung</a>
+      <a href="${prefix}diplomacy/diplomacy.html">🕊️ Diplomatie</a>
+      <a href="${prefix}map/map.html">🗺️ Karte</a>
+      <a href="${prefix}reservation/reservation.html">🎯 Reservierungen</a>
+      <a href="${prefix}calculation/calculation.html">📐 Berechnung</a>
+      <a href="${prefix}member/member.html">👥 Member</a>
       <hr>
       <a data-logout>⛩️ Logout</a>
     </nav>
   `;
 }
 
-/* ---------------------------------------------
-   LOGOUT (supabase optional, sicher für GitHub Pages)
---------------------------------------------- */
+/* Logout (funktioniert immer) */
 document.addEventListener("click", async (e) => {
   if (!e.target.matches("[data-logout]")) return;
 
-  try {
-    await supabase.auth.signOut();
-  } catch {
-    // Supabase optional → ignorieren
-  }
+  try { await supabase.auth.signOut(); } catch {}
 
   sessionStorage.clear();
 
-  // keine absoluten Pfade → sicher für GitHub Pages
-  window.location.href = "../index.html";
+  window.location.href = `${prefix}index.html`;
 });
