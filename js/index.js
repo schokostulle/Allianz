@@ -5,6 +5,6 @@ const btnLogin = document.getElementById("login-btn");
 
 if (btnLogin) {
   btnLogin.addEventListener("click", () => {
-    window.location.href = "/dashboard/dashboard.html";
+    window.location.href = "../dashboard/dashboard.html";
   });
 }
