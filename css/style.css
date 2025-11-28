@@ -1,6 +1,6 @@
 /* =========================================================
    style.css – Global Layout / Komponenten / Utility
-   Version 1.2 – aktualisiert
+   Version 1.2-Fix
 ========================================================= */
 
 /* ---------------------------------------------------------
@@ -23,8 +23,7 @@ html, body {
 }
 
 /* ---------------------------------------------------------
-   APP-SHELL (Navigation + Main)
-   → Nur aktiv, wenn NICHT auth-body
+   APP-SHELL
 --------------------------------------------------------- */
 
 body:not(.auth-body) {
@@ -32,7 +31,6 @@ body:not(.auth-body) {
   flex-direction: row;
 }
 
-/* Navigation links */
 aside#nav {
   width: 200px;
   background: var(--color-surface);
@@ -41,7 +39,6 @@ aside#nav {
   overflow-y: auto;
 }
 
-/* Hauptinhalt */
 main {
   flex: 1;
   padding: var(--space-lg);
@@ -81,7 +78,7 @@ aside#nav a:hover {
 }
 
 /* ---------------------------------------------------------
-   LOGIN / REGISTRATION SCREEN
+   LOGIN / AUTH
 --------------------------------------------------------- */
 
 body.auth-body {
@@ -163,7 +160,7 @@ body.auth-body {
 }
 
 /* ---------------------------------------------------------
-   STARTSCREEN LEGACY (falls benötigt)
+   STARTSCREEN
 --------------------------------------------------------- */
 
 .center {
@@ -234,6 +231,7 @@ button:hover {
   aside#nav {
     position: fixed;
     height: 100%;
+    background: var(--color-surface);
     z-index: var(--z-header);
   }
 
@@ -243,7 +241,7 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   KOPF (Modul-Kopfzeile)
+   KOPF
 --------------------------------------------------------- */
 
 #kopf {
@@ -266,37 +264,33 @@ button:hover {
 }
 
 /* ---------------------------------------------------------
-   TABELLEN — GLOBAL
+   TABELLEN
 --------------------------------------------------------- */
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-sm);
   background: var(--color-surface);
+  font-size: var(--font-size-sm);
 }
 
 table th {
   padding: var(--space-xxs) var(--space-xs);
-  height: var(--space-lg);
   border-bottom: var(--border-normal) solid var(--border-color);
   background: var(--color-surface-alt);
   color: var(--color-text);
-  vertical-align: middle;
   white-space: nowrap;
 }
 
 table td {
   padding: var(--space-xxs) var(--space-xs);
-  height: var(--space-lg);
   border-bottom: var(--border-thin) solid var(--border-color);
   color: var(--color-text);
-  vertical-align: middle;
   white-space: nowrap;
 }
 
 table tr:nth-child(even) {
-  background: var(--color-bg-light);
+  background: var(--color-surface-alt); /* FIX */
 }
 
 table td.txt, table th.txt {
@@ -307,7 +301,7 @@ table td.num, table th.num {
   text-align: center;
 }
 
-table th,
-table td {
+table th, table td {
   line-height: var(--line-height-tight);
+  vertical-align: middle;
 }
