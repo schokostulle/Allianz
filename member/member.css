@@ -1,0 +1,32 @@
+/* Mitgliederverwaltung */
+
+.member-title {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-md);
+}
+
+#member-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+}
+
+#member-table th,
+#member-table td {
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-xs);
+  white-space: nowrap;
+}
+
+#member-table tr:nth-child(even) {
+  background: var(--color-bg-light);
+}
+
+.actions button {
+  margin-right: var(--space-xs);
+}
+
+.locked {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
