@@ -1,25 +1,44 @@
+<!-- /index.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Logbuch – Start</title>
+  <title>Logbuch – Login</title>
 
   <link rel="stylesheet" href="css/root.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="auth-body">
 
-  <div class="center">
-    <h1>LOGBUCH</h1>
-    <button id="login-btn">Login</button>
+  <div class="auth-card">
+
+    <h1 class="auth-title">LOGBUCH</h1>
+
+    <div class="auth-tabs">
+      <button id="tab-login" class="active">Login</button>
+      <button id="tab-register">Registrieren</button>
+    </div>
+
+    <div id="auth-status" class="auth-status"></div>
+
+    <!-- LOGIN -->
+    <form id="login-form" class="auth-form">
+      <input type="text" name="username" placeholder="Benutzername" required>
+      <input type="password" name="password" placeholder="Passwort" required>
+      <button type="submit" class="auth-btn">Login</button>
+    </form>
+
+    <!-- REGISTRIERUNG -->
+    <form id="register-form" class="auth-form" style="display:none;">
+      <input type="text" name="username" placeholder="Benutzername" required>
+      <input type="password" name="password" placeholder="Passwort" required>
+      <button type="submit" class="auth-btn">Registrieren</button>
+    </form>
+
   </div>
 
-  <script>
-    document.getElementById("login-btn").onclick = () => {
-      window.location.href = "dashboard/dashboard.html";
-    };
-  </script>
+  <script type="module" src="js/index.js"></script>
 
 </body>
 </html>
