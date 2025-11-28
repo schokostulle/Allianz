@@ -5,6 +5,7 @@ const btnLogin = document.getElementById("login-btn");
 
 if (btnLogin) {
   btnLogin.addEventListener("click", () => {
-    window.location.href = "../dashboard/dashboard.html";
+    // Da index.html im ROOT liegt → direkter relativer Pfad!
+    window.location.href = "dashboard/dashboard.html";
   });
 }
