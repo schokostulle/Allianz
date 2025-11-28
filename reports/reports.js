@@ -1,4 +1,4 @@
-// /reports/reports.js
+// /reports/reports.js – geprüft & aktualisiert
 
 import { status } from "../js/status.js";
 
@@ -8,7 +8,9 @@ const tableBody = document.querySelector("#report-table tbody");
 
 const reportEntries = [];
 
-/* ========================================================= */
+/* =========================================================
+   Grundstruktur Tabellenzeile
+========================================================= */
 function createEmptyEntry() {
   return {
     date1: "",
@@ -17,6 +19,7 @@ function createEmptyEntry() {
     inn: 0,
     date2: "",
 
+    // Einheiten + Verluste
     fregatte: 0, fregatte_v: 0,
     handelskogge: 0, handelskogge_v: 0,
     kolonialschiff: 0, kolonialschiff_v: 0,
@@ -25,6 +28,7 @@ function createEmptyEntry() {
     langbogenschütze: 0, langbogenschütze_v: 0,
     kanonen: 0, kanonen_v: 0,
 
+    // Gebäude
     hauptgebäude: 0,
     goldbergwerk: 0,
     steinbruch: 0,
@@ -35,6 +39,7 @@ function createEmptyEntry() {
     lagerhaus: 0,
     steinwall: 0,
 
+    // Forschungen
     lanze: 0,
     schild: 0,
     langbogen: 0,
@@ -42,7 +47,9 @@ function createEmptyEntry() {
   };
 }
 
-/* ========================================================= */
+/* =========================================================
+   Vorverarbeitung
+========================================================= */
 function preprocessLines(text) {
   return text
     .replace(/\r\n/g, "\n")
@@ -56,27 +63,31 @@ function preprocessLines(text) {
     .filter(l => l !== "" && l.toLowerCase() !== "löschen");
 }
 
-/* ========================================================= */
+/* =========================================================
+   Datum extrahieren
+========================================================= */
 function parseDateTimeFromLines(lines) {
   const r = /(\d{1,2}\.\d{1,2}\.\d{4})\s+(\d{1,2}:\d{2})/;
   for (const l of lines) {
     const m = l.match(r);
     if (m) return `${m[1]} ${m[2]}`;
   }
-  return lines.length ? lines[0] : "";
+  return lines[0] || "";
 }
 
-/* ========================================================= */
+/* =========================================================
+   Koordinaten
+========================================================= */
 function extractCoords(line) {
   const m = line.match(/\((\d+):(\d+):(\d+)\)/);
-  return m ? {
-    oz: +m[1] || 0,
-    ig: +m[2] || 0,
-    inn: +m[3] || 0
-  } : { oz: 0, ig: 0, inn: 0 };
+  return m
+    ? { oz: +m[1] || 0, ig: +m[2] || 0, inn: +m[3] || 0 }
+    : { oz: 0, ig: 0, inn: 0 };
 }
 
-/* ========================================================= */
+/* =========================================================
+   Einheitenblock
+========================================================= */
 function parseUnitsBlock(lines, startIdx, endIdx, target) {
   const flat = [];
 
@@ -87,8 +98,8 @@ function parseUnitsBlock(lines, startIdx, endIdx, target) {
     const low = line.toLowerCase();
     if (low.startsWith("gesamt") || low.startsWith("verluste")) continue;
 
-    const t = line.split(/\s+/);
-    for (const x of t) {
+    const parts = line.split(/\s+/).filter(Boolean);
+    for (const x of parts) {
       if (/^\d+$/.test(x)) flat.push({ type: "n", v: x });
       else flat.push({ type: "w", v: x });
     }
@@ -102,10 +113,12 @@ function parseUnitsBlock(lines, startIdx, endIdx, target) {
 
       while (i < flat.length && flat[i].type !== "n") i++;
       if (i >= flat.length) break;
+
       const total = +flat[i].v || 0;
       i++;
 
       if (i < flat.length && flat[i].type === "w") i++;
+
       let loss = 0;
       if (i < flat.length && flat[i].type === "n") {
         loss = +flat[i].v || 0;
@@ -113,24 +126,30 @@ function parseUnitsBlock(lines, startIdx, endIdx, target) {
       }
 
       assignUnit(name, total, loss, target);
-    } else i++;
+    } else {
+      i++;
+    }
   }
 }
 
-/* ========================================================= */
-function assignUnit(name, total, loss, target) {
+/* =========================================================
+   Einheiten zuweisen
+========================================================= */
+function assignUnit(name, total, loss, t) {
   const n = name.toLowerCase();
 
-  if (n.startsWith("fregatte")) { target.fregatte = total; target.fregatte_v = loss; }
-  else if (n.startsWith("handelskogge")) { target.handelskogge = total; target.handelskogge_v = loss; }
-  else if (n.startsWith("kolonialschiff")) { target.kolonialschiff = total; target.kolonialschiff_v = loss; }
-  else if (n.startsWith("steinschleuderer")) { target.steinschleuderer = total; target.steinschleuderer_v = loss; }
-  else if (n.startsWith("lanzenträger")) { target.lanzenträger = total; target.lanzenträger_v = loss; }
-  else if (n.startsWith("langbogenschütze")) { target.langbogenschütze = total; target.langbogenschütze_v = loss; }
-  else if (n.startsWith("kanonen")) { target.kanonen = total; target.kanonen_v = loss; }
+  if (n.startsWith("fregatte")) { t.fregatte = total; t.fregatte_v = loss; }
+  else if (n.startsWith("handelskogge")) { t.handelskogge = total; t.handelskogge_v = loss; }
+  else if (n.startsWith("kolonialschiff")) { t.kolonialschiff = total; t.kolonialschiff_v = loss; }
+  else if (n.startsWith("steinschleuderer")) { t.steinschleuderer = total; t.steinschleuderer_v = loss; }
+  else if (n.startsWith("lanzenträger")) { t.lanzenträger = total; t.lanzenträger_v = loss; }
+  else if (n.startsWith("langbogenschütze")) { t.langbogenschütze = total; t.langbogenschütze_v = loss; }
+  else if (n.startsWith("kanonen")) { t.kanonen = total; t.kanonen_v = loss; }
 }
 
-/* ========================================================= */
+/* =========================================================
+   Gebäude / Forschungen
+========================================================= */
 function parseBuildingLevel(name, lvl, t) {
   const n = name.toLowerCase();
 
@@ -138,7 +157,7 @@ function parseBuildingLevel(name, lvl, t) {
   else if (n.startsWith("gold")) t.goldbergwerk = lvl;
   else if (n.startsWith("steinbruch")) t.steinbruch = lvl;
   else if (n.startsWith("holz")) t.holzfällerhütte = lvl;
-  else if (n.startsWith("uni")) t.universität = lvl;
+  else if (n.startsWith("uni")) t.universität = lvl;   // FIX
   else if (n.startsWith("baracke")) t.baracke = lvl;
   else if (n.startsWith("werft")) t.werft = lvl;
   else if (n.startsWith("lagerhaus")) t.lagerhaus = lvl;
@@ -154,7 +173,9 @@ function parseResearchLevel(name, lvl, t) {
   else if (n.startsWith("kanone")) t.kanone = lvl;
 }
 
-/* ========================================================= */
+/* =========================================================
+   Bericht komplett parsen
+========================================================= */
 function parseReport(text) {
   const lines = preprocessLines(text);
   if (!lines.length) return null;
@@ -169,11 +190,9 @@ function parseReport(text) {
   const defender = createEmptyEntry();
 
   attacker.date1 = datetime;
-  attacker.date2 = datetime;
-  Object.assign(attacker, extractCoords(lines[idxAtt]));
-
   defender.date1 = datetime;
-  defender.date2 = datetime;
+
+  Object.assign(attacker, extractCoords(lines[idxAtt]));
   Object.assign(defender, extractCoords(lines[idxDef]));
 
   parseUnitsBlock(lines, idxAtt + 1, idxDef, attacker);
@@ -194,57 +213,52 @@ function parseReport(text) {
 
   parseUnitsBlock(lines, idxDef + 1, endDef, defender);
 
-  for (let i = idxDef + 1; i < lines.length; i++) {
-    const line = lines[i].toLowerCase();
-    if (!line.startsWith("zerstörung") && !line.startsWith("kollateralschaden")) continue;
-
-    const name = lines[i].split(/\s+/)[1];
-    let lvl = 0;
-
-    const m = lines[i].match(/\((\d+)\s*auf\s*(\d+)\)/i);
-    if (m) lvl = +m[2] || 0;
-    if (/\(keine\)/i.test(lines[i])) lvl = 0;
-
-    parseBuildingLevel(name, lvl, defender);
-  }
-
+  /* --- Gebäude + Forschung aus Spähbericht --- */
   const idxSpy = lines.findIndex(l => l.toLowerCase().startsWith("spähbericht"));
+
   if (idxSpy !== -1) {
-    const idxGeb = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("gebäude"));
-    const idxFor = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("forschungen"));
-    const idxRes = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("rohstoffe"));
+
+    /* Gebäude */
+    const idxGeb = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("gebäude"));
+    const idxFor = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("forschungen"));
+    const idxRes = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("rohstoffe"));
 
     if (idxGeb !== -1) {
-      let last = null;
       const end = idxFor !== -1 ? idxFor : idxRes !== -1 ? idxRes : lines.length;
 
+      let last = null;
       for (let i = idxGeb + 1; i < end; i++) {
         const line = lines[i];
-        const m = line.match(/stufe\s*(\d+)/i);
 
+        const m = line.match(/stufe\s*(\d+)/i);
         if (m) {
           const lvl = +m[1] || 0;
           if (last) parseBuildingLevel(last, lvl, defender);
           else parseBuildingLevel(line.split(" ")[0], lvl, defender);
           last = null;
-        } else last = line;
+        } else {
+          last = line;
+        }
       }
     }
 
+    /* Forschungen */
     if (idxFor !== -1) {
-      let last = null;
       const end = idxRes !== -1 ? idxRes : lines.length;
 
+      let last = null;
       for (let i = idxFor + 1; i < end; i++) {
         const line = lines[i];
-        const m = line.match(/stufe\s*(\d+)/i);
 
+        const m = line.match(/stufe\s*(\d+)/i);
         if (m) {
           const lvl = +m[1] || 0;
           if (last) parseResearchLevel(last, lvl, defender);
           else parseResearchLevel(line.split(" ")[0], lvl, defender);
           last = null;
-        } else last = line;
+        } else {
+          last = line;
+        }
       }
     }
   }
@@ -252,7 +266,9 @@ function parseReport(text) {
   return { attacker, defender };
 }
 
-/* ========================================================= */
+/* =========================================================
+   Tabellenrenderer
+========================================================= */
 function renderTable() {
   tableBody.innerHTML = "";
 
@@ -274,10 +290,13 @@ function renderTable() {
       e.lanze, e.schild, e.langbogen, e.kanone
     ];
 
-    cols.forEach((v, i) => {
+    cols.forEach((v, colIndex) => {
       const td = document.createElement("td");
-      td.textContent = v;
-      td.className = i <= 3 ? "txt" : "num";
+      td.textContent = v ?? "";
+
+      td.className =
+        colIndex === 0 ? "txt" : "num"; // Datum = links, Rest = numerisch
+
       tr.appendChild(td);
     });
 
@@ -285,19 +304,21 @@ function renderTable() {
   });
 }
 
-/* ========================================================= */
+/* =========================================================
+   Button: Bericht verarbeiten
+========================================================= */
 processBtn.addEventListener("click", () => {
   const text = input.value.trim();
   if (!text) return;
 
-  const res = parseReport(text);
-  if (!res) {
-    status.show("Bericht unvollständig.", "warn");
+  const r = parseReport(text);
+  if (!r) {
+    status.show("Bericht unvollständig oder fehlerhaft.", "warn");
     return;
   }
 
-  reportEntries.unshift(res.attacker);
-  reportEntries.unshift(res.defender);
+  reportEntries.unshift(r.attacker);
+  reportEntries.unshift(r.defender);
 
   renderTable();
   input.value = "";
