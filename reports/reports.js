@@ -1,4 +1,4 @@
-// /reports/reports.js – geprüft & aktualisiert
+// /reports/reports.js – FINAL
 
 import { status } from "../js/status.js";
 
@@ -8,9 +8,7 @@ const tableBody = document.querySelector("#report-table tbody");
 
 const reportEntries = [];
 
-/* =========================================================
-   Grundstruktur Tabellenzeile
-========================================================= */
+/* ========================================================= */
 function createEmptyEntry() {
   return {
     date1: "",
@@ -44,9 +42,7 @@ function createEmptyEntry() {
   };
 }
 
-/* =========================================================
-   Vorverarbeitung
-========================================================= */
+/* ========================================================= */
 function preprocessLines(text) {
   return text
     .replace(/\r\n/g, "\n")
@@ -60,9 +56,7 @@ function preprocessLines(text) {
     .filter(l => l !== "" && l.toLowerCase() !== "löschen");
 }
 
-/* =========================================================
-   Datum
-========================================================= */
+/* ========================================================= */
 function parseDateTimeFromLines(lines) {
   const r = /(\d{1,2}\.\d{1,2}\.\d{4})\s+(\d{1,2}:\d{2})/;
   for (const l of lines) {
@@ -72,21 +66,13 @@ function parseDateTimeFromLines(lines) {
   return lines[0] || "";
 }
 
-/* =========================================================
-   Koordinaten
-========================================================= */
+/* ========================================================= */
 function extractCoords(line) {
   const m = line.match(/\((\d+):(\d+):(\d+)\)/);
-  return m ? {
-    oz: +m[1] || 0,
-    ig: +m[2] || 0,
-    inn: +m[3] || 0
-  } : { oz: 0, ig: 0, inn: 0 };
+  return m ? { oz: +m[1] || 0, ig: +m[2] || 0, inn: +m[3] || 0 } : { oz: 0, ig: 0, inn: 0 };
 }
 
-/* =========================================================
-   Einheitenblock
-========================================================= */
+/* ========================================================= */
 function parseUnitsBlock(lines, startIdx, endIdx, target) {
   const flat = [];
 
@@ -95,6 +81,13 @@ function parseUnitsBlock(lines, startIdx, endIdx, target) {
     if (!line) continue;
 
     const low = line.toLowerCase();
+    if (
+      low.startsWith("zerstörung") ||
+      low.startsWith("kollateralschaden") ||
+      low.startsWith("spähbericht") ||
+      low.startsWith("gebäude")
+    ) break;
+
     if (low.startsWith("gesamt") || low.startsWith("verluste")) continue;
 
     const t = line.split(/\s+/).filter(Boolean);
@@ -128,9 +121,7 @@ function parseUnitsBlock(lines, startIdx, endIdx, target) {
   }
 }
 
-/* =========================================================
-   Einheiten zuweisen
-========================================================= */
+/* ========================================================= */
 function assignUnit(name, total, loss, t) {
   const n = name.toLowerCase();
 
@@ -143,9 +134,7 @@ function assignUnit(name, total, loss, t) {
   else if (n.startsWith("kanonen")) { t.kanonen = total; t.kanonen_v = loss; }
 }
 
-/* =========================================================
-   Gebäude/Forschungen
-========================================================= */
+/* ========================================================= */
 function parseBuildingLevel(name, lvl, t) {
   const n = name.toLowerCase();
 
@@ -169,9 +158,7 @@ function parseResearchLevel(name, lvl, t) {
   else if (n.startsWith("kanone")) t.kanone = lvl;
 }
 
-/* =========================================================
-   Bericht parsen – MIT FIX
-========================================================= */
+/* ========================================================= */
 function parseReport(text) {
   const lines = preprocessLines(text);
   if (!lines.length) return null;
@@ -209,51 +196,44 @@ function parseReport(text) {
 
   parseUnitsBlock(lines, idxDef + 1, endDef, defender);
 
-  /* =========================================================
-     FIXED BLOCK: Zerstörung & Kollateralschaden
-  ========================================================== */
+  /* -------------------------
+     FIX: Zerstörung 1-/3-zeilig
+  ------------------------- */
   for (let i = idxDef + 1; i < lines.length; i++) {
     const raw = lines[i];
     const low = raw.toLowerCase();
 
-    if (!low.startsWith("zerstörung") && !low.startsWith("kollateralschaden")) continue;
+    if (!low.startsWith("zerstörung") && !low.startsWith("kollateralschaden"))
+      continue;
 
-    // ---------------------------
-    // 1) Einzeilige Variante
-    // ---------------------------
-    const m1 = raw.match(/(Zerstörung|Kollateralschaden)\s+([A-Za-zÄÖÜäöüß]+)\s+\((\d+)\s*auf\s*(\d+)\)/i);
+    /* einzeilig */
+    const m1 = raw.match(/(Zerstörung|Kollateralschaden)\s+([A-Za-zÄÖÜäöüß\-]+)\s+\((\d+)\s*auf\s*(\d+)\)/i);
     if (m1) {
-      const building = m1[2];
-      const newLevel = parseInt(m1[4], 10) || 0;
-      parseBuildingLevel(building, newLevel, defender);
+      parseBuildingLevel(m1[2], parseInt(m1[4], 10) || 0, defender);
       continue;
     }
 
-    // ---------------------------
-    // 2) Mehrzeilige Variante
-    // ---------------------------
+    /* dreizeilig */
     const nameLine = lines[i + 1] || "";
     const lvlLine = lines[i + 2] || "";
 
     const m2 = lvlLine.match(/\((\d+)\s*auf\s*(\d+)\)/i);
     if (m2) {
-      const building = nameLine.trim();
-      const newLevel = parseInt(m2[2], 10) || 0;
-      parseBuildingLevel(building, newLevel, defender);
+      parseBuildingLevel(nameLine.trim(), parseInt(m2[2], 10) || 0, defender);
       i += 2;
       continue;
     }
   }
 
-  /* =========================================================
-     Gebäude/Forschungen aus Spähbericht
-  ========================================================== */
+  /* -------------------------
+     Spähbericht
+  ------------------------- */
   const idxSpy = lines.findIndex(l => l.toLowerCase().startsWith("spähbericht"));
 
   if (idxSpy !== -1) {
-    const idxGeb = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("gebäude"));
-    const idxFor = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("forschungen"));
-    const idxRes = lines.findIndex((l, i) => i > idxSpy && l.toLowerCase().startsWith("rohstoffe"));
+    const idxGeb = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("gebäude"));
+    const idxFor = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("forschungen"));
+    const idxRes = lines.findIndex((l, x) => x > idxSpy && l.toLowerCase().startsWith("rohstoffe"));
 
     if (idxGeb !== -1) {
       const end = idxFor !== -1 ? idxFor : idxRes !== -1 ? idxRes : lines.length;
@@ -268,7 +248,9 @@ function parseReport(text) {
           if (last) parseBuildingLevel(last, lvl, defender);
           else parseBuildingLevel(line.split(" ")[0], lvl, defender);
           last = null;
-        } else last = line;
+        } else {
+          last = line;
+        }
       }
     }
 
@@ -293,9 +275,7 @@ function parseReport(text) {
   return { attacker, defender };
 }
 
-/* =========================================================
-   Tabelle rendern
-========================================================= */
+/* ========================================================= */
 function renderTable() {
   tableBody.innerHTML = "";
 
@@ -328,9 +308,7 @@ function renderTable() {
   });
 }
 
-/* =========================================================
-   Bericht verarbeiten
-========================================================= */
+/* ========================================================= */
 processBtn.addEventListener("click", () => {
   const text = input.value.trim();
   if (!text) return;
